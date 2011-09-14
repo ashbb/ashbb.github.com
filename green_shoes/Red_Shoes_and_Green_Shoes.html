@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<title>The Green Shoes Manual // Difference between Red Shoes and Green Shoes</title>
+<script type="text/javascript" src="static/code_highlighter.js"></script>
+<script type="text/javascript" src="static/code_highlighter_ruby.js"></script>
+<style type="text/css">@import 'static/manual.css';</style>
+</head>
+
+<body><div id="main">
+<div id="manual2"><h2>Green Shoes v1.0</h2>
+<h1>Red Shoes and Green Shoes</h1>
+<div class="intro">
+<img src="static/rshoes-icon.png"></img> <img src="static/gshoes-icon.png"></img>
+<p>Green Shoes follows Red Shoes APIs, but not stick to 100% API compatible.
+Red Shoes includes it's own ruby interpreter. So, you don't have to install Ruby.
+Even if you've already install ruby interpreter, Red Shoes doesn't use that.
+Green Shoes is just a gem written in pure Ruby. Red Shoes is written in C and Ruby.</p>
+<p>Let's talk about the difference.</p>
+</div>
+
+<h4>TextBlock width</h4>
+<p>The following two snippets are same in Red Shoes.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   para 'hello ' * 20
+ end
+</code></pre>
+
+<pre><code class="rb">
+ Shoes.app do
+   20.times{para 'hello '}
+ end
+</code></pre>
+
+<p>But in Green Shoes, need to add <code>:width</code> size explicitly.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   20.times{para 'hello ', width: 40}
+ end
+</code></pre>
+
+<p>If you don't specify the <code>:width</code> size, Green Shoes makes a TextBlock object with  the <code>parent.width</code>. <p>
+
+<h4>Open two Shoes.app at a time</h4>
+
+<pre><code class="rb">
+ Shoes.app{para 'hello'}
+ Shoes.app{para 'hi'}
+</code></pre>
+
+<p>Red Shoes opens two Shoes.app windows at a time. But Green Shoes opens them in order one by one. If you want to open two windows at a time with Green Shoes, try out the following.</p>
+
+<pre><code class="rb">
+ Shoes.app do 
+   para 'hello'
+   Shoes.app{para 'hi'}
+ end
+</code></pre>
+
+<h4>Calculate width and height</h4>
+<p>This snippet works well on Red Shoes. But doesn't on Green Shoes.</p>
+
+<pre><code class="rb">
+ Shoes.app do 
+   button 'hello', width: 0.5
+   list_box width: 0.5
+ end
+</code></pre>
+
+<p>Green Shoes needs a slot explicitly to calculate width and height.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   stack do
+     button 'hello', width: 0.5
+     list_box width: 0.5
+   end
+ end
+</code></pre>
+
+<h4>Close window</h4>
+<p>Pay attention to the close sequence. For Red Shoes:</p>
+
+<pre><code class="rb">
+ Shoes.app title: 'first window' do
+   button 'spawn a new window' do
+     Shoes.app(title: 'new window'){}
+     close
+   end
+ end
+</code></pre>
+
+<p>For Green Shoes:</p>
+
+<pre><code class="rb">
+ Shoes.app title: 'first window' do
+   button 'spawn a new window' do
+     close
+     Shoes.app(title: 'new window'){}
+   end
+ end
+</code></pre>
+
+<h4>Color</h4>
+<p>In Red Shoes <code>red</code> is an object of Shoes::Color class, 
+but in Green Shoes it's just an array.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   para red       #=> rgb(255, 0, 0) : [1.0, 0.0, 0.0]
+   para red.class #=> Shoes::Color   : Array
+ end
+</code></pre>
+
+</div></body></html>
