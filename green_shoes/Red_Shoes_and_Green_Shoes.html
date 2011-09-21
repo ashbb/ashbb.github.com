@@ -116,4 +116,21 @@ but in Green Shoes it's just an array.</p>
  end
 </code></pre>
 
+<h4>& and <</h4>
+<p>Red Shoes can handle '&' and '<' normally.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   para '& and <'
+ end
+</code></pre>
+
+<p>But in Green Shoes, you have to replace them to '<b>&</b><b>amp;</b>' and '<b>&</b><b>lt;</b>' as like as HTML specific characters.</p>
+
+<pre><code class="rb">
+ Shoes.app do
+   para '<b>&</b><b>amp;</b> and <b>&</b><b>lt;</b>'
+ end
+</code></pre>
+
 </div></body></html>
