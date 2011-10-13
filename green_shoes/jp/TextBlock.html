@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // TextBlock</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>TextBlock</h1><div class="intro"><p>テキストブロック（TextBlock）オブジェクトは単独の要素にとして形成されるテキストの グループを示します。例えば、太字のテキストを含むパラグラフです。 リンクと太字のテキストを含むキャプションです。（そして、<code>caption</code>はテキストブロックの タイプです。しかしながら、<code>link</code>と<code>strong</code>はテキストクラスのタイプです。） <img src="static/man-ele-textblock.png" /></p></div><p>テキストブロックのすべての種類はタイプは<a href="Element.html">Element Creation</a>ページで 確認できます。</p><ul><li><a href="Element.html#banner">banner</a>, 48ピクセルのフォント。 </li><li><a href="Element.html#title">title</a>, 34ピクセルのフォント。 </li><li><a href="Element.html#subtitle">subtitle</a>, 26ピクセルのフォント。 </li><li><a href="Element.html#tagline">tagline</a>, 18ピクセルのフォント。 </li><li><a href="Element.html#caption">caption</a>, 14ピクセルのフォント。 </li><li><a href="Element.html#para">para</a>, 12ピクセルのフォント。 </li><li><a href="Element.html#inscription">inscription</a>, 10ピクセルのフォント。</li></ul><a name="contents"></a><div class="method"><a href="#contents">contents()</a> » an array of elements </div><p>ブロック内部の整形された文字列すべてのリストです。</p><p><strong>注意:</strong> Green Shoesは<code>contents</code>メソッドをサポートしていません。</p><div class="desc"></div><a name="cursor"></a><div class="method"><a href="#cursor">cursor()</a> » an index</div><p>テキストカーソルの位置を返します。このテキストボックス内の文字のインデックスです。</p><div class="desc"></div><a name="cursor="></a><div class="method"><a href="#cursor=">cursor = an index or nil</a></div><p>テキストカーソルを表示/非表示します。 例えば、<code>cursor = 3</code>は文の先頭から3文字目の位置にテキストカーソルを表示します。 <code>cursor = -1</code>は文の末尾にテキストカーソルを表示します。 <code>cursor = nil</code>はテキストカーソルを非表示にします。</p><pre><code class="rb"> Shoes.app do
+  msg = para 'hello ' * 20
+  msg.cursor = -1
+  keypress do |k|
+    n = case k
+      when 'Left'; -1
+      when 'Right'; 1
+      else
+        next
+    end
+    n += msg.cursor
+    len = msg.text.length
+    n = len unless n > -1
+    msg.cursor = n % (len+1)
+    flush
+  end
+ end
+</code></pre><div class="desc"></div><a name="highlight"></a><div class="method"><a href="#highlight">highlight()</a> » an array</div><p>テキストマーカーの開始位置とハイライトする長さを配列形式で返します。</p><div class="desc"></div><a name="hit"></a><div class="method"><a href="#hit">hit(left, top)</a> » an index or nil</div><p>マウスカーソルが指し示すテキストのインデックスを返します。 <code>left</code>と<code>top</code> は、マウスの位置です。</p><pre><code class="rb"> Shoes.app do
+   para 'index: ', width: 50
+   index = para '', width: 20
+   msg = title 'hello ' * 5
+   click do |b, x, y|
+     index.text = msg.hit x, y
+   end
+ end
+</code></pre><div class="desc"></div><a name="marker"></a><div class="method"><a href="#marker">marker()</a> » an index</div><p>テキストマーカーの開始位置を返します。</p><div class="desc"></div><a name="marker="></a><div class="method"><a href="#marker=">marker = an index</a></div><p>テキストマーカーの開始位置からカーソル位置までの文字列をハイライトします。</p><pre><code class="rb"> Shoes.app do
+   background gainsboro
+   extend HH::Markup
+   code = 'alert "Hello Green Shoes! " * 5'
+   msg = para highlight code, nil
+   button 'marker' do
+     msg.cursor = 17
+     msg.marker = 14
+     msg.text = highlight msg.markup, nil
+     para msg.highlight
+     flush
+   end
+ end
+</code></pre><div class="desc"></div><a name="markup"></a><div class="method"><a href="#markup">markup()</a> » a text</div><p>Pangoのマークアップテキストを返します。</p><div class="desc"></div><a name="replace"></a><div class="method"><a href="#replace">replace(a string)</a></div><p>ブロック全体のテキストを<code>a string</code>の文字で置き換えます。</p><div class="desc"></div><a name="text"></a><div class="method"><a href="#text">text()</a> » a string</div><p>テキストボックスのすべての文字の文字列を返します。画面に表示されるかのように、 すべてのスタイルまたはテキストクラスが取り除かれて実際の文字だけを返します。</p><div class="desc"></div><a name="text="></a><div class="method"><a href="#text=">text = a string</a></div><p>ブロック全体のテキストを<code>a string</code>の文字で置き換えます。</p><div class="desc"></div><a name="to_s"></a><div class="method"><a href="#to_s">to_s()</a> » a string</div><p><a href="TextBlock.html#text">text</a>のエイリアスです。 テキストブロックのすべてのコンテンツをフラットにした文字列を返します。</p><div class="desc"></div><p class="next">Next: <a href="Timers.html">Timers</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><ul class="sub"><li><a href="Common.html">Common</a></li><li><a href="Background.html">Background</a></li><li><a href="Border.html">Border</a></li><li><a href="Button.html">Button</a></li><li><a href="Check.html">Check</a></li><li><a href="EditBox.html">EditBox</a></li><li><a href="EditLine.html">EditLine</a></li><li><a href="Image.html">Image</a></li><li><a href="ListBox.html">ListBox</a></li><li><a href="Progress.html">Progress</a></li><li><a href="Radio.html">Radio</a></li><li><a href="Shape.html">Shape</a></li><li><a href="TextBlock.html">TextBlock</a></li><li><a href="Timers.html">Timers</a></li><li><a href="Video.html">Video</a></li></ul></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

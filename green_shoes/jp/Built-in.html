@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Built-in Methods</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Built-in Methods</h1><div class="intro"><p>これらのメソッドはGreen Shoesのプログラムを通してどこでも利用できます。</p></div><p>これらすべてのコマンドは、あなたがドットをそれらに付与しない点が珍しいです。 <strong>このマニュアルのほかのすべてのメソッドはオブジェクトにドットを付与すべきです。</strong> しかし、これらのビルトインメソッド（カーネルメソッドとも呼ばれている）はドットがないことを意味します。</p><p>一般的なものとして<code>alert</code>があります：</p><pre><code class="rb">  alert "No dots in sight"
+</code></pre><p>これと、ArrayとStringに対してだけ利用可能な、カーネルメソッドではない、 <code>reverse</code>メソッドを比較してください：</p><pre><code class="rb"> Shoes.app do
+   para "Plaster of Paris".reverse
+   #=> "siraP fo retsalP"
+   para [:dogs, :cows, :snakes].reverse
+   #=> [:snakes, :cows, :dogs]
+ end
+</code></pre><p>描画やボタンを作成したりするための多くのGreen Shoesメソッドはスロットへ付与されます。 より詳しい情報については<a href="Slots.html">Slots</a>のセクションを見てください。</p><h4>ビルトイン定数</h4><p>Green Shoesにはいくつかのビルトイン定数があり、それはどんなバージョンのGreen Shoesが 実行されているかを判別することを証明するのに利用できるかもしれません</p><p><strong>DIR</strong> は、<code>green_shoes/lib</code>のフルパスです。</p><p><strong>COLORS</strong> は、アプリケーションで利用できる色の完全な一覧です。</p><p><strong>FONTS</strong> は、アプリケーションで利用できるフォントの完全な一覧です。</p><p><strong>VERSION</strong> は、Green Shoesのバージョンです。</p><pre><code class="rb"> Shoes.app do
+   para VERSION
+   para fg(DIR, red)
+   image File.join(DIR, '../static/gshoes-icon.png')
+   para fg(FONTS.join(', '), green)
+   para COLORS.map{|k, v| [k, v]}
+ end
+</code></pre><a name="alert"></a><div class="method"><a href="#alert">alert(message: a string, :block => true or false, title: a string)</a> » nil</div><p>短いメッセージを含むウィンドウをポップアップします。</p><pre><code class="rb"> alert "I'm afraid I must interject!"
+</code></pre><p>alertは信じられないほど煩わしいので控えめに利用してください！ プログラムをデバッグする手助けのメッセージを表示するためにalertを利用するなら、 Rubyの標準メソッド<code>puts</code>や<code>p</code>を試してみて下さい。</p><p>もしalert()メソッドをスレッドセーフにしたい場合、すなわちメインスレッドをブロックしたくない場合は、 <code>:block =&gt; false</code>オプションを使ってください。またウィンドウのタイトルを変更したい場合は、 <code>:title =&gt; a string</code>オプションを使ってください。</p><div class="desc"></div><a name="ask"></a><div class="method"><a href="#ask">ask(message: a string)</a> » a string</div><p>ウィンドウをポップアップして質問をします。例えば、あなたは誰かに名前を尋ねたいかもしれません。</p><pre><code class="rb"> if name = ask("Please, enter your name:")
+   Shoes.app{para "Welcome, #{name}!"}
+ end
+</code></pre><p>上記のスクリプトを実行するとき、コンピュータを利用している人は、名前を入力するための空のボックスを 持つウィンドウを見るでしょう。そして、その名前は<code>name</code>変数に保存されます。</p><div class="desc"></div><a name="ask_color"></a><div class="method"><a href="#ask_color">ask_color(title: a string)</a> » RGB array</div><p>カラーピッカーウィンドウをポップアップします。このプログラムは色が選ばれるのを待ち、そしてあなたに 色オブジェクトを与えます。いくつかの方法でこの色を利用するために<code>Color</code>ヘルプを見てください。</p><pre><code class="rb"> backcolor = ask_color "Pick a background"
+ Shoes.app do
+   background backcolor
+ end
+</code></pre><div class="desc"></div><a name="ask_open_file"></a><div class="method"><a href="#ask_open_file">ask_open_file()</a> » a string</div><p>&quot;ファイルを開く。。。&quot;ウィンドウをポップアップします。これは標準のウィンドウであり、すべてのフォルダを表示して 開くファイルを選択させます。そしてファイルの名前を返します。</p><pre><code class="rb"> filename = ask_open_file
+ Shoes.app do
+   para File.read(filename)
+ end
+</code></pre><div class="desc"></div><a name="ask_save_file"></a><div class="method"><a href="#ask_save_file">ask_save_file()</a> » a string</div><p>これは先ほど述べた<code>ask_open_file</code>と似ており、&quot;ファイルを保存する。。。&quot;ウィンドウをポップアップします。</p><pre><code class="rb"> save_as = ask_save_file
+ Shoes.app do
+   para save_as
+ end
+</code></pre><div class="desc"></div><a name="ask_open_folder"></a><div class="method"><a href="#ask_open_folder">ask_open_folder()</a> » a string</div><p>&quot;フォルダを開く。。。&quot;ウィンドウをポップアップします。これは、すべてのフォルダを表示し、開くフォルダを 選択させる標準のウィンドウです。これはあなたにフォルダの名前を渡します。</p><pre><code class="rb"> folder = ask_open_folder
+ Shoes.app do
+   para Dir.entries(folder)
+ end
+</code></pre><div class="desc"></div><a name="ask_save_folder"></a><div class="method"><a href="#ask_save_folder">ask_save_folder()</a> » a string</div><p>これは先ほど述べた<code>ask_open_folder</code>と似ており、&quot;フォルダを保存する。。。&quot;ウィンドウをポップアップします。</p><pre><code class="rb"> save_to = ask_save_folder
+ Shoes.app do
+   para save_to
+ end
+</code></pre><div class="desc"></div><a name="confirm"></a><div class="method"><a href="#confirm">confirm(question: a string)</a> » true or false</div><p>yes-または-noの質問をポップアップします。コンピュータの前の人が<strong>yes</strong>をクリックするなら、 返される<code>true</code>を受け取ります。そうでは無いなら、返される<code>false</code>を受け取ります。</p><pre><code class="rb"> if confirm("Draw a circle?")
+  Shoes.app{ oval top: 0, left: 0, radius: 50 }
+ end
+</code></pre><div class="desc"></div><a name="exit"></a><div class="method"><a href="#exit">exit()</a></div><p>プログラムを止めます。突然に終了したいときはいつでも、これを呼んでください。</p><p><strong>注意:</strong> Ruby自身の標準<code>exit</code>メソッドを使う必要がある場合は (フォークされたRubyプロセス内で等) <code>Kernel.exit</code>を呼び出して下さい。</p><div class="desc"></div><a name="font"></a><div class="method"><a href="#font">font(message: a string)</a> » an array of font family names</div><p>ファイルからTrueType（または他の種類のフォント）をロードします。TrueTypeはすべてのプラットフォームで サポートされるとはいえ、あなたのプラットフォームは他の種類のフォントをサポートするかもしれません。 Shoesはこの動作に、それぞれのオペレーティングシステムのビルトインフォントシステムを利用します。</p><p><strong>注意:</strong> 今のところGreen Shoesでは、fontメソッドをサポートしていません。</p><p>ここにどのプラットフォームで何のフォントが動作するかの目安があります。</p><ul><li>Bitmap fonts (.bdf, .pcf, .snf) - Linux </li><li>Font resource (.fon) - Windows </li><li>Windows bitmap font file (.fnt) - Linux, Windows </li><li>PostScript OpenType font (.otf) - Mac OS X, Linux, Windows </li><li>Type1 multiple master (.mmm) - Windows </li><li>Type1 font bits (.pfb) - Linux, Windows </li><li>Type1 font metrics (.pfm) - Linux, Windows </li><li>TrueType font (.ttf) - Mac OS X, Linux, Windows </li><li>TrueType collection (.ttc) - Mac OS X, Linux, Windows</li></ul><p>フォントが適切にロードされたなら、ファイルに見つかったフォントの名前の配列を取り戻すでしょう。 そうではなく、ファイルにはフォントが見つからないなら<code>nil</code>が返されます。</p><p>また興味深いことに:<code>Shoes::FONTS</code>定数はこのプラットフォームで利用可能なフォントの完全な一覧です。 <code>include?</code>を利用していくつかのフォントをチェックできます。</p><pre><code class="rb">  if Shoes::FONTS.include? "Coolvetica"
+    alert "Coolvetica is available on this system."
+  else
+    alert "You do not have the Coolvetica font."
+  end
+</code></pre><p>もしフォントを表示することに問題があるなら、それを利用する前に、アプリケーションがフォントを ロードすることを確認してください。特にOS Xでは、もしフォントがロードされる前に利用されたなら、 フォントキャッシュはロードされたフォントを無視する傾向があります。</p><div class="desc"></div><a name="gradient"></a><div class="method"><a href="#gradient">gradient(color1, color2)</a> » a range of RGB array</div><p>二つの色から直線勾配を作ります。それぞれの色に、色を描画するためにRGB arrayか文字列を渡します。 例えば、<code>gradient(green, red)</code>は、<code>green..red</code>と同じです。 また<code>gradient(green, '#FA3')</code>のように記述することもできます。</p><pre><code class="rb"> Shoes.app do
+   oval 100, 100, 100,
+     fill: gradient(green, '#FA3'), angle: 45
+ end
+</code></pre><div class="desc"></div><a name="gray"></a><div class="method"><a href="#gray">gray(the numbers: darkness, alpha)</a> » RGB array</div><p>暗さのレベルや、任意的にはアルファレベルからグレースケールカラーを作成します。</p><pre><code class="rb"> Shoes.app do
+  nostroke
+  11.times do |i|
+    y = x = 50 + 10 * i
+    r = 200 - 10 * i
+    oval x, y, r, fill: gray(1-i*0.1)
+  end
+ end
+</code></pre><div class="desc"></div><a name="rgb"></a><div class="method"><a href="#rgb">rgb(red, green, blue, alpha)</a> » an array of decimal numbers</div><p>赤、緑、青の構成要素から色を作成します。アルファレベル（透明度を示す）は任意に加えることができます。</p><p>整数を渡すときは、0から255までの値を利用してください。</p><pre><code class="rb"> Shoes.app do
+   blueviolet = rgb(138, 43, 226, 0.5)
+   darkgreen = rgb(0, 100, 0, 0.5)
+   oval 100, 100, 100,
+     fill: [blueviolet, darkgreen].sample(1)
+ end
+</code></pre><p>または、0.0から1.0までの10進数を利用してください。</p><pre><code class="rb"> Shoes.app do
+   blueviolet = rgb(0.54, 0.17, 0.89)
+   darkgreen = rgb(0, 0.4, 0)
+   oval 100, 100, 100,
+     fill: [blueviolet, darkgreen].sample(1)
+ end
+</code></pre><div class="desc"></div><p class="next">Next: <a href="App.html">The App Object</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><ul class="sub"><li><a href="Built-in.html">Built-in</a></li><li><a href="App.html">App</a></li><li><a href="Styles.html">Styles</a></li><li><a href="Classes.html">Classes</a></li><li><a href="Colors.html">Colors</a></li></ul></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

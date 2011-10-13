@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Art for Slots</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Art for Slots</h1><div class="intro"><p>それぞれのスロットは、色のついた形状やグラデーションなどでおおうことにできる白紙の表面の キャンバスのようなものです。</p></div><p>多くの一般的な形状は<code>oval</code>と<code>rect</code>メソッドで描かれます。 まず、絵筆の色を準備する必要があります。</p><p><code>stroke</code>コマンドは線の色を設定します。 <code>fill</code>コマンドは線の内部を塗りつぶすために利用する色を設定します。　</p><pre><code class="rb"> Shoes.app do
+   stroke red
+   fill blue
+   oval top: 10, left: 10, radius: 100
+ end
+</code></pre><p>このコードはまわりに赤い線のある青いパイを与えます。 100ピクセルの幅で、ウィンドウの左上から南東に少しのピクセルを配置します。</p><p>上記の<code>blue</code>と<code>red</code>メソッドはRGB配列です。 どうやって色を混ぜるかはColorsセクションを見てください。</p><h4>Processing と NodeBox からのインスピレーション</h4><p>この技巧的なメソッドの大抵は文字通りPythonのドローイングキットのNodeBoxから来ています。 次に、NodeBoxは多くのアイデアを、グラフィックとアニメーションのためのJavaのような言語である Processingから得ています。私はそれらのすばらしいプログラムの作者から大きな恩を受けています。</p><p>Green ShoesはNodeBoxとProcessingから少しの点が違います。 例えば、Green Shoesはそれ自身のRGB配列を持っていることを含めて、異なるカラーメソッドを 持っていますが、それらはとてもProcessingのカラーメソッドに似ています。 そしてGreen Shoesは線を描くことや形状内を塗りつぶすために画像やグラデーションを 利用することも許しています。</p><p>ShoesはいくつかのアニメーションのアイデアをProcessingから取り入れており、 Processingのメソッドをしっかりと参考にしようとしながらそれを拡張しています。</p><a name="arc"></a><div class="method"><a href="#arc">arc(left, top, width, height, angle1, angle2)</a> » Shoes::Oval</div><p>弧の形状（楕円形の一部）を座標（left, top）に描きます。 このメソッドは<code>:angle1</code>と<code>:angle2</code>のスタイルを提供することにより <a href="oval.html">oval</a>より 少し多くの制御をが行えます。（実際には、<code>:angle1</code>に0と<code>:angle2</code>に<code>2*Math::PI</code>を 設定することにより、<code>oval</code>メソッドをまねることができます。）</p><pre><code class="rb"> Shoes.app do
+   fill yellow..green
+   stroke red..blue
+   strokewidth 10
+   cap :curve
+   a = animate 12 do |i|
+     @e.remove if @e
+     r = i * (Math::PI * 0.01)
+     @e = arc 100, 50, 180, 360, 0, r
+     a.stop if r >= 2*Math::PI
+   end
+ end
+</code></pre><div class="desc"></div><a name="arrow"></a><div class="method"><a href="#arrow">arrow(left, top, width)</a> » Shoes::Shape</div><p>座標（left, top）に<code>width</code>ピクセルの矢を描きます。</p><pre><code class="rb"> Shoes.app do
+   para 'An arrow shape:', left: 20, top: 10
+   arrow 30, 40, 70
+ end
+</code></pre><div class="desc"></div><a name="cap"></a><div class="method"><a href="#cap">cap(:curve or :rect or :project)</a> » self</div><p>描くすべての線の終点の形状である線の頂点を設定します。 <code>:curve</code>が設定されるなら、終点はまるくなります。 デフォルトは<code>:rect</code>で、線の終点は突然に平らになります。 <code>:project</code>の頂点も平らですが、棒の外側は少し長くなります。</p><pre><code class="rb"> Shoes.app do
+   nofill
+   strokewidth 20
+   stroke green
+   cap :curve
+   line 100, 100, 300, 100
+   line 100, 250, 300, 300
+   cap :rect
+   line 100, 150, 300, 150
+   stroke blue
+   cap :project
+   line 100, 200, 300, 200
+   line 200, 100, 200, 300
+   strokewidth 1
+   stroke red
+   rect 100, 100, 200, 200
+ end
+</code></pre><div class="desc"></div><a name="fill"></a><div class="method"><a href="#fill">fill(pattern)</a> » pattern</div><p>塗りつぶすバケツの色の指定（またはパターン）を設定します。 パターンは色やグラデーションまたは画像が設定できます。 そして、一度塗りつぶすバケツが設定されたら、選択されたパターンで色づけられた形状を 描くことができます。</p><p>画像のパターンで星を描くためには：</p><pre><code class="rb"> Shoes.app do
+   fill File.join(DIR, "../static/gshoes-icon.png")
+   star 200, 200, 5, 100, 50
+ end
+</code></pre><p>塗りつぶすバケツをクリアするには<code>nofill</code>を使ってください。 そして<code>stroke</code>メソッドを利用して線（星の枠線）の色を設定してください。</p><div class="desc"></div><a name="nofill"></a><div class="method"><a href="#nofill">nofill()</a> » self</div><p>塗りつぶす色を削除するため、形状は塗りつぶされずに描かれます。 その代わりに、形状は線だけを持ち、中央を透明のままにします。</p><div class="desc"></div><a name="nostroke"></a><div class="method"><a href="#nostroke">nostroke()</a> » self</div><p>線の色を空にします。形状は外側の線が描かれなくなります。 <code>nofill</code>も設定された場合は、形状は表示されずに描かれます。</p><div class="desc"></div><a name="line"></a><div class="method"><a href="#line">line(left, top, x2, y2)</a> » Shoes::Line</div><p>現在の線の色（別名&quot;stroke&quot;）を使って座標（left, top）から（x2, y2）まで線を描きます。</p><div class="desc"></div><a name="oval"></a><div class="method"><a href="#oval">oval(left, top, radius)</a> » Shoes::Oval</div><p>座標（left, top）ピクセルに<code>radius</code>ピクセルの幅と高さの円を描きます。 線の色や塗りつぶす色が形状を描くために利用されます。 デフォルトでは、座標は楕円形の最も左上の角ですが、これは<a href="Art.html#transform">transform</a>メソッドを 呼ぶことや、次のメソッドの下の<code>:center</code>スタイルを使用することによって変更することができます。</p><pre><code class="rb"> Shoes.app do
+   stroke blue
+   strokewidth 4
+   fill black
+   oval 10, 10, 50
+ end
+</code></pre><p>様々な比率の楕円形を描くためには、<code>oval(left, top, width, height)</code>のシンタックスを 利用してもいいです。</p><div class="desc"></div><a name="oval"></a><div class="method"><a href="#oval">oval(styles)</a> » Shoes::Oval</div><p>スタイルのハッシュを利用して円を描きます。次のスタイルがサポートされています：</p><ul><li><code>top</code>: 楕円形の囲いのy座標。 </li><li><code>left</code>: 楕円形の囲いのx座標。 </li><li><code>radius</code>: 円の幅と高さ。 </li><li><code>width</code>: 楕円形の幅のピクセルでの指定。 </li><li><code>height</code>: 楕円形の高さのピクセルでの指定。 </li><li><code>center</code>: 座標を楕円形の中央に指定しますか？（trueまたはfalse）</li></ul><p>これらのスタイルは形状オブジェクトの<code>style</code>メソッドを利用して変更されます。</p><p><strong>注意:</strong> Green Shoesは<code>:center</code>スタイルをサポートしていません。</p><div class="desc"></div><a name="rect"></a><div class="method"><a href="#rect">rect(top, left, width, height, corners = 0)</a> » Shoes::Rect</div><p>座標（left, top）からwidth x heightの寸法の長方形を描きます。 オプションとして、5番目の引数（ピクセルでの角の半径）により長方形の角を丸くすることもできます。 他の形状と同様に、長方形は描く線の色や塗りつぶす色を利用して描かれます。</p><pre><code class="rb"> Shoes.app do
+   stroke rgb(0.5, 0.5, 0.7)
+   fill rgb(1.0, 1.0, 0.9)
+   rect 10, 10, self.width - 20, self.height - 20
+ end
+</code></pre><p>上記のサンプルは角の周囲に10ピクセルのマージンを残して、その親の箱の範囲を塗りつぶす 長方形を描きます。デフォルトで親の箱を塗りつぶした長方形のためには<code>background</code>も 見てください。</p><div class="desc"></div><a name="rect"></a><div class="method"><a href="#rect">rect(styles)</a> » Shoes::Rect</div><p>スタイルのハッシュを利用して長方形を描きます。次のスタイルがサポートされています：</p><ul><li><code>top</code>: 長方形のy座標。 </li><li><code>left</code>: 長方形のx座標。 </li><li><code>curve</code>: 長方形の角の半径のピクセル。 </li><li><code>width</code>: 長方形のピクセルによる幅。 </li><li><code>height</code>:長方形のピクセルによる高さ。 </li><li><code>center</code>: 座標を長方形の中央に指定しますか？（trueまたはfalse）</li></ul><p>これらのスタイルは形状オブジェクトの<code>style</code>メソッドを利用して変更されます。</p><p><strong>注意:</strong> Green Shoesは<code>:center</code>スタイルをサポートしていません。</p><div class="desc"></div><a name="rotate"></a><div class="method"><a href="#rotate">rotate(degrees: a number)</a> » self</div><p>形状をその角度で描画するために、<code>度（degrees）</code>数により描画のために利用される 範囲を回転させます。</p><p>下の例では、長方形は(30, 30)に45度回転されて描かれます。</p><pre><code class="rb"> Shoes.app do
+   fill "#333"
+   rotate 45
+   rect 30, 30, 40, 40
+ end
+</code></pre><div class="desc"></div><a name="shape"></a><div class="method"><a href="#shape">shape(left, top) { ... }</a> » Shoes::Shape</div><p>(left, top)から開始して、続いてブロックの内部で<code>line_to</code>、<code>move_to</code>、<code>curve_to</code> そして<code>arc_to</code>を呼ぶことにより、任意の形状を表現（記述）します。 曲がったり弧を描いたりする長い線の形状をスケッチして見ることができます。</p><pre><code class="rb"> Shoes.app do
+   fill yellow
+   shape do
+     move_to 50, 30
+     curve_to 100, 100, 10, 20, 100, 50
+     line_to 20, 100
+     line_to 30, 30
+   end
+ end
+</code></pre><p>形状は他の形状を含むこともできます。 そして、形状の内部に<a href="Art.html#oval">oval</a>、<a href="Art.html#rect">rect</a>、<a href="Art.html#line">line</a>、<a href="Art.html#star">star</a>または <a href="Art.html#arrow">arrow</a>（さらに、<a href="Art.html">Art</a>セクションの他のメソッドすべて）を配置することができますが、 それらは線の一部ではないでしょう。形状のグループのようなそれらは、すべて1つとして描かれます。</p><p><strong>注意:</strong> Green Shoesでは、上記の<code>line_to</code>、<code>move_to</code>、<code>curve_to</code>は Cairo::Contextのメソッドです。ブロックの中で直接それらを呼び出しています。 そのため、Green Shoesでは<code>arc_to</code>はサポートしていません。また他の形状もShapeブロック 内に含めることができません。</p><div class="desc"></div><a name="star"></a><div class="method"><a href="#star">star(left, top, points = 10, outer = 100.0, inner = 50.0)</a> » Shoes::Star</div><p>描く線の色や塗りつぶす色を利用して星を描きます。 星は(left, top)の座標を中心点として<code>頂点（points）</code>の数とともに配置されます。 <code>outer</code>の幅は星の全半径をを定義します；<code>inner</code>の幅は頂点の始まる星の中央の半径を 指定します。</p><div class="desc"></div><a name="stroke"></a><div class="method"><a href="#stroke">stroke(pattern)</a> » pattern</div><p>スロットのアクティブな線の色を設定します。<code>pattern</code>は色、グラデーションまたは画像で、 それらはすべて&quot;patterns&quot;に分類されます。その線の色はそれに続く形状すべての枠線を 描くときに利用されます。</p><p>つまり、まわりに赤い線を持つ矢印を描くには：</p><pre><code class="rb"> Shoes.app do
+   stroke red
+   nofill
+   star 100, 100
+ end
+</code></pre><p>線の色をクリアするには、<code>nostroke</code>メソッドを利用します。</p><div class="desc"></div><a name="strokewidth"></a><div class="method"><a href="#strokewidth">strokewidth(a number)</a> » self</div><p>スロットの内部で描かれるすべての線のサイズを設定します。 <code>stroke</code>メソッドが線の色を変更する一方、<code>strokewidth</code>メソッドは線のサイズを ピクセルで変更します。<code>strokewidth(4)</code>を呼ぶことにより4ピクセルの太さで線を描きます。</p><div class="desc"></div><a name="transform"></a><div class="method"><a href="#transform">transform(:center or :corner)</a> » self</div><p>（<code>skew</code>や<code>rotate</code>のような）変化は形状の中心あたりで実行されるべきですか？ またはその形状の角ですか？Shoesの初期値は<code>:corner</code>です。</p><p><strong>注意:</strong> Green Shoesは<code>:transform</code>メソッドをサポートしていません。</p><div class="desc"></div><a name="translate"></a><div class="method"><a href="#translate">translate(left, top)</a> » self</div><p>スロットの描画の範囲を開始する位置を移動します。 通常は、すべての形状がこの位置から描くことができるように、その範囲は左上の角の (0, 0)から開始します。<code>translate</code>により開始位置が(10, 20)に移動されて、 (50, 60)に形状が描かれるなら、その形状は実際にはスロットの(60, 80)に描かれます。</p><p><strong>注意:</strong> Green Shoesは<code>:translate</code>メソッドをサポートしていません。</p><div class="desc"></div><p class="next">Next: <a href="Element.html">Element Creation</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><ul class="sub"><li><a href="Art.html">Art</a></li><li><a href="Element.html">Element</a></li><li><a href="Events.html">Events</a></li><li><a href="Manipulation.html">Manipulation</a></li><li><a href="Position.html">Position</a></li><li><a href="Traversing.html">Traversing</a></li></ul></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

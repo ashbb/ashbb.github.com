@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Radio</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Radio</h1><div class="intro"><p>ラジオボタン（Radio button）はクリック可能な円のグループです。 それをマークするには円をクリックしてください。ラジオボタンは１度に１つだけマークできます。 （１度に１つのオプションだけしか選択できないところは、リストボックスに似ています。） <img src="static/man-ele-radio.png" /></p></div><p>それでは、リストボックスを利用すべきときと、ラジオボタンを利用すべきときをどのようにして 決定しますか？そうですね、リストボックスはボックスをクリックしてドロップダウンを表示すること なく１つのハイライトされたアイテムを表示します。 しかし、ラジオボタンはどれがマークされているか気にすることなく、すべて表示されます。</p><pre><code class="rb"> Shoes.app do
+   para "Among these films, which do you prefer?\n"
+   radio
+   para strong("The Taste of Tea"), 
+     " by Katsuhito Ishii\n", width: 570
+   radio
+   para strong("Kin-Dza-Dza"), 
+     " by Georgi Danelia\n", width: 570
+   radio
+   para strong("Children of Heaven"), 
+     " by Majid Majidi\n", width: 570
+ end
+</code></pre><p>それらは（たくさんの<code>para</code>とともに）同じスロット内で一緒にグループ化されているため、 ３つのラジオボタンから１度に１つだけが選択できます。</p><p>これらをそれら自身のスロットに移動したら、この例は壊れます。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     para "Among these films, which do you prefer?"
+     flow do
+       radio
+       para "The Taste of Tea by Katsuhito Ishii", 
+         width: 300
+     end
+     flow do
+       radio
+       para "Kin-Dza-Dza by Georgi Danelia",
+         width: 300
+     end
+     flow do
+       radio
+       para "Children of Heaven by Majid Majidi",
+         width: 300
+     end
+   end
+ end
+</code></pre><p>しかし、これは修正できます。 違うスロットのラジオボタンを一緒にグループ化することができ、それらにすべて同じグループ名を 与える必要があります。</p><p>ここでは<code>:films</code>グループにそれらすべてのラジオボタンをグループ化しました。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     para "Among these films, which do you prefer?"
+     flow do
+       radio :films
+       para "The Taste of Tea by Katsuhito Ishii",
+         width: 300
+     end
+     flow do
+       radio :films
+       para "Kin-Dza-Dza by Georgi Danelia",
+         width: 300
+     end
+     flow do
+       radio :films
+       para "Children of Heaven by Majid Majidi",
+         width: 300
+     end
+   end
+ end
+</code></pre><p>下にあるそれらの一覧を越える更なるメソッドについては、<a href="Common.html">Common</a>メソッドのページを 詳しく調べてください。それらのメソッドをすべてのラジオボタンで同様に利用できるからです。</p><a name="checked?"></a><div class="method"><a href="#checked?">checked?()</a> » true or false</div><p>ラジオボタンがチェックされているかどうかを返します。 そして、<code>true</code>の意味は&quot;はい、チェックされています！&quot;です。</p><div class="desc"></div><a name="checked="></a><div class="method"><a href="#checked=">checked = true or false</a></div><p>ラジオボタンをマークしたりマークを外したりします。 例えば、<code>checked = false</code>を利用して、ラジオボタンをクリアします。</p><div class="desc"></div><a name="click"></a><div class="method"><a href="#click">click() { |self| ... }</a> » self</div><p>ラジオボタンがクリックされたとき、その<code>click</code>ブロックが呼ばれます。 このブロックは、クリックされたラジオボタンを示すオブジェクトの<code>self</code>を渡します。</p><p>ラジオボタンをマークしたときとマークを外したときの両方で、クリックが送られます。</p><div class="desc"></div><a name="focus"></a><div class="method"><a href="#focus">focus()</a> » self</div><p>ラジオボタンのフォーカスを移動します。そのラジオボタンはハイライトされます。</p><div class="desc"></div><p class="next">Next: <a href="Shape.html">Shape</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><ul class="sub"><li><a href="Common.html">Common</a></li><li><a href="Background.html">Background</a></li><li><a href="Border.html">Border</a></li><li><a href="Button.html">Button</a></li><li><a href="Check.html">Check</a></li><li><a href="EditBox.html">EditBox</a></li><li><a href="EditLine.html">EditLine</a></li><li><a href="Image.html">Image</a></li><li><a href="ListBox.html">ListBox</a></li><li><a href="Progress.html">Progress</a></li><li><a href="Radio.html">Radio</a></li><li><a href="Shape.html">Shape</a></li><li><a href="TextBlock.html">TextBlock</a></li><li><a href="Timers.html">Timers</a></li><li><a href="Video.html">Video</a></li></ul></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

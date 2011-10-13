@@ -1,0 +1,10 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Traversing the Page</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Traversing the Page</h1><div class="intro"><p>スロット内部の要素を最初から最後までループする必要性に気づくかもしれません。 または、ページを登って要素の親のスタックを探す必要があるかもしれません。</p></div><p>すべての要素で、上位のスロット直接得るために<code>parent</code>メソッドを呼ぶことができます。 そしてスロットでは、すべての子を得るために<code>contents</code>メソッドを呼ぶことができます。 （テキストブロックなどのいくつかの要素は、それらの子を得るための<code>contents</code>メソッドも 持っています。）</p><a name="contents"></a><div class="method"><a href="#contents">contents()</a> » an array of elements</div><p>スロットのすべての要素を一覧にします。</p><div class="desc"></div><a name="parent"></a><div class="method"><a href="#parent">parent()</a> » a Shoes::Stack or Shoes::Flow</div><p>要素のコンテナのオブジェクトを得ます。</p><pre><code class="rb"> Shoes.app do
+   s = stack do
+     para 'Green'
+     @p = para 'Shoes'
+   end
+   para s
+   para s.contents
+   para @p.parent
+ end
+</code></pre><div class="desc"></div><p class="next">Next: <a href="Elements.html">Elements</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><ul class="sub"><li><a href="Art.html">Art</a></li><li><a href="Element.html">Element</a></li><li><a href="Events.html">Events</a></li><li><a href="Manipulation.html">Manipulation</a></li><li><a href="Position.html">Position</a></li><li><a href="Traversing.html">Traversing</a></li></ul></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

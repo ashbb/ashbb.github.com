@@ -1,0 +1,10 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // vs.RedShoes</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>vs.RedShoes</h1><div class="intro"><p>Green ShoesはRed Shoesに従っていますが、完全互換ではありません。</p></div><h4>TextBlock</h4><p>以下の2つのコードはRed Shoesでは同じ動作をします。</p><pre><code class="rb"> Shoes.app do
+   para 'hello ' * 20
+ end
+</code></pre><pre><code class="rb"> Shoes.app do
+   20.times{para 'hello '}
+ end
+</code></pre><p>でもGreen Shoesでは、<code>:width</code>オプションを明示的に付ける必要があります。</p><pre><code class="rb"> Shoes.app do
+   20.times{para 'hello ', width: 40}
+ end
+</code></pre><p>もし<code>:width</code>オプションを付けないと、Green Shoesは<code>parent.width</code>でそのテキストブロックを生成します。</p><p>詳細は、<a href="http://ashbb.github.com/green_shoes/Red_Shoes_and_Green_Shoes.html" target="_new">Red Shoes and Green Shoes</a>を 参照下さい。 </p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li><li><ul class="sub"><li><a href="Sample.html">Sample</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="vs.RedShoes.html">vs.RedShoes</a></li></ul></li></ul></div></div></body></html>

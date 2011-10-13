@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Button</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Button</h1><div class="intro"><p>ボタン（Button）は、ご存知のとおり、押しボタンです。それらをクリックしたら何かを行います。 ボタンは&quot;OK&quot;または&quot;Are you sure?&quot;などを表示します。そして、よければボタンをクリックします。 <img src="static/man-ele-button.png" /></p></div><pre><code class="rb"> Shoes.app do
+   button "OK!"
+   button "Are you sure?"
+ end
+</code></pre><p>上記の例のボタンはそれらがクリックされたときに何も行いません。 働きを行わせるためには、それぞれのボタンにブロックを取り付けます。</p><pre><code class="rb"> Shoes.app do
+   button "OK!" do
+     append { para "Well okay then." }
+   end
+   button "Are you sure?" do
+     append { para "Your confidence is inspiring." }
+   end
+ end
+</code></pre><p>このようにボタンにブロックを取り付けました。 それぞれのブロックはページに新しいパラグラフを取り付けます。 クリックする度に、パラグラフが追加されます。</p><p>これはこれ以上深くはしません。ボタンはクリック可能な句でしかありません。</p><p>厳密に言えば、次に続く例では他の方法でそれを書いています。</p><pre><code class="rb"> Shoes.app do
+   @b1 = button "OK!"
+   @b1.click{para "Well okay then."}
+   @b2 = button "Are you sure?"
+   @b2.click{para "Your confidence is inspiring."}
+ end
+</code></pre><p>見た目は劇的に違いますが、これは同じ動きです。 １つ目の違い：直接ブロックをボタンに取り付けるのではなく、<code>click</code>メソッドを通して、 ブロックを後で取り付けています。</p><p>２つ目の違いはボタンには全く関係がありません。Green Shoesがスロットに要素を直接 追加することを許しているので、<code>append</code>ブロックが取り除かれています。 そのため直接<code>para</code>を呼ぶことができます。（<code>prepend</code>、<code>before</code>または <code>after</code>メソッドの場合にはできません。）</p><p>以下のメソッドに加えて、ボタンは<a href="Common.html">Common</a>のすべてのメソッドも継承します。</p><a name="click"></a><div class="method"><a href="#click">click() { |self| ... }</a> » self</div><p>ボタンがクリックされたときには、<code>click</code>ブロックが呼ばれます。 このブロックは<code>self</code>を渡します。意味すること：どちらのボタンでクリックされたか。</p><div class="desc"></div><a name="focus"></a><div class="method"><a href="#focus">focus()</a> » self</div><p>ボタンのフォーカスを移動します。 そのボタンはハイライトされ、ユーザがエンターキーを打てば、クリックされます。</p><div class="desc"></div><p class="next">Next: <a href="Check.html">Check</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><ul class="sub"><li><a href="Common.html">Common</a></li><li><a href="Background.html">Background</a></li><li><a href="Border.html">Border</a></li><li><a href="Button.html">Button</a></li><li><a href="Check.html">Check</a></li><li><a href="EditBox.html">EditBox</a></li><li><a href="EditLine.html">EditLine</a></li><li><a href="Image.html">Image</a></li><li><a href="ListBox.html">ListBox</a></li><li><a href="Progress.html">Progress</a></li><li><a href="Radio.html">Radio</a></li><li><a href="Shape.html">Shape</a></li><li><a href="TextBlock.html">TextBlock</a></li><li><a href="Timers.html">Timers</a></li><li><a href="Video.html">Video</a></li></ul></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

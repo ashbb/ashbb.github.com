@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Common Methods</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Common Methods</h1><div class="intro"><p>Green Shoesでは少しのメソッドがすべての小さな要素によって共有されてます。 移動、表示、非表示。要素の削除。基本的でとても一般的なことです。 この一覧はそれらの一般的なコマンドを含んでいます。</p></div><p>すべてのメソッドの中でもっとも一般的なメソッドの一つは<code>style</code>です。 （これはスロットの<a href="Position.html#style">style</a>メソッドとしてもカバーされます。）</p><pre><code class="rb"> Shoes.app do
+   stack do
+     # Background, text and a button: 
+     # both are elements!
+     @back  = background green
+     @text  = banner "A Message for You, Rudy"
+     @press = button "Stop your messin about!"
+     # And so, both can be styled.
+     @text.style size: 12, 
+       markup: fg(@text.text, red), margin: 10
+     @press.style width: 400
+     @back.style height: 10
+   end
+ end
+</code></pre><p>個別のコマンドについては、左にあるElementsセクションの他のリンクを見てください。 ビデオファイルの中断または再生がしたいなら、ビデオの中断や再生は特異なので、 <a href="Video.html">Video</a>セクションを確認してください。中断するボタンという感じではありません。</p><a name="displace"></a><div class="method"><a href="#displace">displace(left: a number, top: a number)</a> » self</div><p>要素を移動して置き換えます。しかし周囲のレイアウトは変更しません。 特にアニメーションしている間でも要素の位置を保持したいなら、これは微妙なアニメーションに 重要です。おそらく素早く震えるボタンや視界にスロットを滑り込ませるような。</p><p>要素を置き換えるとき、それが配置されている左上の角から相対的に移動します。 そのため、要素が(20, 40)の座標にあり、2ピクセル左と6ピクセル上に置き換えるなら、 結果的に(22, 46)の座標となります。</p><pre><code class="rb"> # Not yet available
+ Shoes.app do
+   flow :margin => 12 do
+     # Set up three buttons
+     button "One"
+     @two = button "Two"
+     button "Three"
+     # Bounce the second button
+     animate do |i|
+       @two.displace(0, (Math.sin(i) * 6).to_i)
+     end
+   end
+ end
+</code></pre><p>他の２つのボタンは動かずにじっとしていますが、２番目のボタンが飛び跳ねることに 注目してください。この状況で普通の<code>move</code>を使うなら、２番目のボタンはレイアウトから 取り除かれて、２番目のボタンが全くそこにないかのように振る舞うでしょう。 （<a href="Common.html#move">move</a>の例を見てください。）</p><p><strong>特に注意してください：</strong>表示される要素の座標を得るために<code>left</code>と<code>top</code>メソッドを 利用するなら、通常の座標を得るだけです。それは置き換えが行われていないかのようです。 置き換えは即座のアニメーションだけを目的とします。</p><p><strong>注意:</strong> Green Shoesは<code>displace</code>メソッドをサポートしていません。</p><div class="desc"></div><a name="height"></a><div class="method"><a href="#height">height()</a> » a number</div><p>エレメントの垂直のピクセルによるスクリーンサイズです。画像の場合には、これは画像全体の サイズではありません。これは要素の現在表示されている高さです。</p><p>150x150ピクセルの画像を持っていて50ピクセルに幅を設定するなら、このメソッドは50を 返します。</p><p>例や他の解説のために<a href="Common.html#width">width</a>メソッドも見てください。</p><div class="desc"></div><a name="hide"></a><div class="method"><a href="#hide">hide()</a> » self</div><p>要素が見えないように、非表示にします。<a href="Common.html#show">show</a>や<a href="Common.html#toggle">toggle</a>も 見てください。</p><div class="desc"></div><a name="left"></a><div class="method"><a href="#left">left()</a> » a number</div><p>要素の左端の位置をピクセルで得ます。</p><div class="desc"></div><a name="move"></a><div class="method"><a href="#move">move(left: a number, top: a number)</a> » self </div><p>スロットの範囲内でピクセルによって指定した位置に要素を移動します。 その要素はスロットの内部にあります。しかし、もはやスロットの他の要素と一緒に 積み上げられたりフローされたりしません。その要素は絶対的な位置指定ではなく、 自由に浮かんでいます。</p><pre><code class="rb"> Shoes.app do
+   # Set up three buttons
+   b = button "One"
+   @two = button "Two"
+   button "Three"
+   # Bounce the second button
+   animate do |i|
+     @two.move(33, 33 + (Math.sin(i) * 6).to_i)
+   end
+ end
+</code></pre><p>３番目のボタンがその位置にスライドすることを許しており、２番目のボタンは特定の場所に 動かされてします。要素を別の場所に変更しないで移動したいなら、 <a href="Common.html#displace">displace</a>メソッドを見てください。</p><div class="desc"></div><a name="parent"></a><div class="method"><a href="#parent">parent()</a> » a Shoes::Stack or Shoes::Flow</div><p>その要素のコンテナのオブジェクトを得ます。反対のことを行うためにはスロットの <a href="Traversing.html#contents">contents</a>も見てください：コンテナの要素を得ます。</p><div class="desc"></div><a name="remove"></a><div class="method"><a href="#remove">remove()</a> » self</div><p>スロットから要素を削除します。（他の言葉で言い換えると：ガベージに投げます。） その要素はもう表示されません。</p><div class="desc"></div><a name="show"></a><div class="method"><a href="#show">show()</a> » self</div><p>要素が非表示なら、表示します。<a href="Common.html#hide">hide</a>や<a href="Common.html#toggle">toggle</a>も見てください。</p><div class="desc"></div><a name="style"></a><div class="method"><a href="#style">style()</a> » styles</div><p>ハッシュの形で、要素に適用するフルセットのスタイルを得ます。<code>width</code>や<code>height</code>や <code>top</code>のようなメソッドは特定のピクセルでのサイズを返しますが、<code>style[:width]</code>または <code>style[:top]</code>を利用すると、初めの設定を得ることができます。 （&quot;100%&quot;の幅または&quot;10px&quot;のトップのような）</p><pre><code class="rb"> Shoes.app do
+   # A button which take up the whole page
+   @b = button "All of it", 
+     width: width, height: height
+   # When clicked, show the styles
+   @b.click { alert(@b.style.inspect) }
+ end
+</code></pre><div class="desc"></div><a name="style"></a><div class="method"><a href="#style">style(styles)</a> » styles</div><p>要素のスタイルを変更します。これは要素の<code>:width</code>と<code>:height</code>、テキストのフォントの <code>:size</code>、形状の<code>:stroke</code>や<code>:fill</code>を含みます。または他の多くのスタイルの設定もです。</p><div class="desc"></div><a name="toggle"></a><div class="method"><a href="#toggle">toggle()</a> » self</div><p>要素が表示されているなら非表示にします。または要素が非表示なら表示します。</p><div class="desc"></div><a name="top"></a><div class="method"><a href="#top">top()</a> » a number</div><p>要素の上端のピクセルの位置を得ます。</p><div class="desc"></div><a name="width"></a><div class="method"><a href="#width">width()</a> » a number</div><p>要素の全体の大きさの幅をピクセルで得ます。 このメソッドはいつも正確なピクセルサイズを返します。 画像の場合は、画像の全幅ではなく、表示されているサイズだけです。 詳しくは<a href="Common.html#height">height</a>メソッドも見てください。</p><p>また、120ピクセルの幅のスタック内に1.0の幅の要素を作成したなら、<code>120</code>が返されます。 <code>style[:width]</code>を呼んだなら、<code>120</code>を得ます。</p><pre><code class="rb"> Shoes.app do
+   stack width: 120 do
+     @b = button "Click me", width: 1.0 do
+       alert "button.width = #{@b.width}\n" +
+         "button.style[:width] = " +
+         "#{@b.style[:width]}"
+     end
+   end
+ end
+</code></pre><p>幅を設定するためには、<a href="Common.html#style">style</a>メソッドをもう一度調べる必要があります。 そして、150ピクセルの幅にボタンを設定するには：<code>@b.style(width: 150)</code>。</p><div class="desc"></div><p class="next">Next: <a href="Background.html">Background</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><ul class="sub"><li><a href="Common.html">Common</a></li><li><a href="Background.html">Background</a></li><li><a href="Border.html">Border</a></li><li><a href="Button.html">Button</a></li><li><a href="Check.html">Check</a></li><li><a href="EditBox.html">EditBox</a></li><li><a href="EditLine.html">EditLine</a></li><li><a href="Image.html">Image</a></li><li><a href="ListBox.html">ListBox</a></li><li><a href="Progress.html">Progress</a></li><li><a href="Radio.html">Radio</a></li><li><a href="Shape.html">Shape</a></li><li><a href="TextBlock.html">TextBlock</a></li><li><a href="Timers.html">Timers</a></li><li><a href="Video.html">Video</a></li></ul></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

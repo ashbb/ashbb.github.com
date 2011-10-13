@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // The Rules of Green Shoes</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>The Rules of Green Shoes</h1><div class="intro"><p>Green Shoesがどのように動作するのか推測するのはやめましょう。トリッキーな動作で悩むと思います。 私はShoesの中心的な規則を要約しまいた。これらは、それにすべての働きをさせるためには知らなくては ならないものです。</p></div><p>これらはGreen Shoesの至る所で目にする一般的な規則です。Green Shoesは単純さと明解さという 全体的な理念を持っていますが、いくつか勉強したり覚えたりする必要のあるポイントがあります。</p><h4>Shoesのトリッキーなブロック</h4><p>はい、これは極めて重要です。Green Shoesはブロックによってトリックをします。 このトリックはすべてのものを読みやすくします。しかし、これは深い階層でブロックを利用することを難しくもします。</p><p><strong>普通のRubyブロックを試しましょう：</strong></p><pre><code class="rb"> Shoes.app do
+   ary = ['potion', 'swords', 'shields']
+   ary.each do |item|
+     puts item
+   end
+ end
+</code></pre><p>Green Shoesでは、これらの種類のブロックは同じ働きをします。この上記のブロックは配列をループして 各オブジェクトを<code>item</code>変数に格納します。この<code>item</code>変数はブロックが終わると消滅（スコープから出る）します。</p><p>考え方を守っているもう一つのことは、普通のRubyブロックの内部と<code>self</code>を同じままにしています。 <code>each</code>の前に呼ばれるどんな<code>self</code>でも、それは<code>each</code>ブロック内部と同じです。</p><p><strong>これらはどちらも大部分のGreen Shoesのブロックで正しいです。</strong></p><pre><code class="rb"> Shoes.app do
+   stack do
+     para "First"
+     para "Second"
+     para "Third"
+   end
+ end
+</code></pre><p>ここでは二つのブロックがあります。一つ目は<code>Shoes.app</code>によるものです。この<code>app</code>ブロックは<code>self</code>を変更します。</p><p>もう一方のブロックは<code>stack</code>ブロックです。このブロックはselfを変更しません。</p><p><strong>どんな理由があって<code>app</code>ブロックはselfを変更するのでしょうか？</strong> 最後の例を徹底的に詳しく説明することから 始めましょう。</p><pre><code class="rb"> Shoes.app do
+   self.stack do
+     self.para "First"
+     self.para "Second"
+     self.para "Third"
+   end
+ end
+</code></pre><p>上記の例におけるすべての<code>self</code>はアプリケーションオブジェクトです。Shoesは<code>app</code>ブロック内部でselfを 変更するために、Rubyの<code>instance_eval</code>を利用します。そして、そのメソッドは<code>stack</code>を呼び出して <code>para</code>をアプリケーションへ送ります。</p><p><strong>これはShoesアプリケーション全体でインスタンス変数が利用できる理由でもあります：</strong></p><pre><code class="rb"> Shoes.app do
+   @s = stack do
+     @p1 = para "First"
+     @p2 = para "Second"
+     @p3 = para "Third"
+   end
+ end
+</code></pre><p>これらのインスタンス変数は、すべてアプリケーションオブジェクト内部で終了します。</p><p><strong>新しいウィンドウを作成するときはいつでも、<code>self</code>も変更されます。</strong></p><pre><code class="rb"> Shoes.app title: "MAIN" do
+   para self
+   button "Spawn" do
+     Shoes.app title: "CHILD" do
+       para self
+     end
+   end
+ end
+</code></pre><h4>ブロックリダイレクション</h4><p>もっとも、<code>stack</code>ブロックは別の話です。これは<code>self</code>を変えませんし、基本的に標準のブロックです。</p><p><strong>しかしトリックがあります：</strong><code>stack</code>を配置してブロックを与えたとき、アプリケーションオブジェクトはstackを メモリへ配置します。ブロックが終了するときstackは立ち去ります。 そのため、アプリケーションのトップスロットから新しいstackまで、ブロック内部のすべての描画は<strong>リダイレクト</strong>されます。</p><p>そのため、まず、たとえ彼らが確かにアプリケーションオブジェクトへ渡したとしても、それらの3つの<code>para</code>は <code>stack</code>上に描画されます。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     para "First"
+     para "Second"
+     para "Third"
+   end
+ end
+</code></pre><p>少しトリッキーですよね？これについて知っていても噛みつかれるかもしれません。</p><p>それがあなたをつかまえる一つの方法は、<code>app</code>ブロック外のプログラム内のどこか他で、stackを編集しようと することです。</p><p>例えばstackオブジェクトを使いまわすとしましょう。そして、そのオブジェクトを編集するクラスを持ちます。</p><pre><code class="rb"> class Messenger
+   def initialize slot
+     @slot = slot
+   end
+   def add msg
+     para msg rescue puts $!
+   end
+ end
+ Shoes.app do
+   slot = stack
+   m = Messenger.new slot
+   m.add 'hello'
+ end
+</code></pre><p>アプリケーションが始まるときに、stackオブジェクトをMessengerクラスへ渡すと仮定します。 そして、後で、メッセージが来るとき、<code>add</code>メソッドはそのstackにパラグラフを追加するのに用いられます。 正しく動作するでしょうか？</p><p>いや、それは動作しません。<code>para</code>メソッドが見つかりません。すでにアプリケーションオブジェクトは まわりにありません。そして、それは<code>para</code>メソッドによるものです。</p><p>幸いにも、それぞれのShoesオブジェクトはアプリケーションオブジェクトを再び開かせる<code>app</code>メソッドを 持っているため、さらなる編集ができます。</p><pre><code class="rb"> class Messenger
+   def initialize slot
+     @slot = slot
+   end
+   def add msg
+     @slot.app do
+       para msg rescue puts $!
+     end
+   end
+ end
+ Shoes.app do
+   slot = stack
+   m = Messenger.new slot
+   m.add 'hello'
+ end
+</code></pre><p>ご想像のとおり、その<code>app</code>オブジェクトは<code>self</code>をアプリケーションオブジェクトに変更します。</p><p>ルールは次のようになります：</p><p>1. <strong>&quot;app&quot;という名前か新しいウィンドウを作成するメソッドはアプリケーションオブジェクトの<code>self</code>を変更します。 </strong><br />
+（これは、<a href="Element.html#window">window</a> と<a href="Element.html#dialog">dialog</a>同様に、Shoes.appとSlot.appの両方にとって正しいです。） <br />
+2. <strong>stackへ加えられるブロックは、フローや（追加などの）どんな操作メソッドでもselfを 変更しません。その代わりに、彼らはスロットをアプリケーションの編集stackにポップします。</strong></p><h4>固定された高さに注意</h4><p>列でウィンドウを区切るように、スロットの固定された幅は重要です。</p><pre><code class="rb"> Shoes.app do
+   flow do
+     stack :width => 200 do
+       background lavender
+       caption "Column one"
+       para "is 200 pixels wide"
+     end
+     stack :width => -200 do
+       background bisque
+       caption "Column two"
+       para "is 100% minus 200 pixels wide"
+     end
+   end
+ end
+</code></pre><p>スロットの固定された高さは、より一般的ではありません。通常は、テキストや画像がウィンドウの下へ できるだけ流れることを望みます。高さは通常は自然に決定します。</p><p>ここで重要なことは、固定された高さが実際はスロットに違うように振る舞わせることです。 確かに最後にはスロットは完全に切り離なされて、<strong>入れ子のウィンドウ</strong>になります。 新しいレイヤーはオペレーティングシステムによってスロットを一定の正方形に保つために作成されます。</p><p>通常のスロットと入れ子ウィンドウのスロットとの違いは、後者はスクロールバーを持てることです。</p><pre><code class="rb"> Shoes.app do
+   stack width: 200, height: 200, scroll: true do
+     background "#DFA"
+     100.times do |i|
+       para "Paragraph No. #{i}"
+     end
+   end
+ end
+</code></pre><p>これらの入れ子ウィンドウはより多くのメモリを必要とします。彼らはアプリケーションにもう少し負担をかけます。 もしあなたが、固定された高さのたくさんのスロットで遅さを経験しているなら、違うアプローチを試してください。</p><p><strong>注意:</strong> 固定された高さのマジック(スロットを入れ子のウィンドウにする)は今のところGreen Shoesでは サポートしていません。スクロールバーは自動的に現れますがメインウィンドウに対してのみです。</p><pre><code class="rb"> Shoes.app do
+   stack :width => 200 do
+     background "#DFA"
+     100.times do |i|
+       para "Paragraph No. #{i}"
+     end
+   end
+ end
+</code></pre><h4>画像と形状のブロック</h4><p>多くの初心者が形状でウィンドウを散らかし始めます。すべての長方形や楕円形をスロットへ投げ入れるのは 確かに簡単です。</p><p><strong>しかしながら、Shoesはそれらすべての形状のためにオブジェクトを生成することを覚えておいて下さい！。</strong></p><pre><code class="rb"> Shoes.app do
+   fill black.push(0.1)
+   100.times do |i|
+     oval i, i, i * 2 if i > 0
+   end
+ end
+</code></pre><p>この例では、100個の楕円形オブジェクトが生成されます。これは悪すぎるわけではありません。 しかし、一つの形状の中にこれらを作成するのなら、これはより軽量になるでしょう。</p><pre><code class="rb"> # Not yet available
+ Shoes.app do
+   fill black(0.1)
+   shape do
+     100.times do |i|
+       oval i, i, i * 2 if i > 0
+     end
+   end
+ end
+</code></pre><p>ああ、待ってください。この楕円形は今回は満たされません。なぜなら、この形状たちは一つの大きな形状に 結合されたからです。そして、このケースではShoesはどこを満たすべきか、分かりません。</p><p>そして、アウトラインを厳密に扱うとき、通常は一つの形状に結合することを望みます。</p><p>別のオプションでは、これらすべての楕円形を一つの画像に結合します。</p><pre><code class="rb"> # Not yet available
+ Shoes.app do
+   fill black(0.1)
+   image 300, 300 do
+     100.times do |i|
+       oval i, i, i * 2
+     end
+   end
+ end
+</code></pre><p>そうしよう！その楕円形はすべて一つの300 x 300の画像に結合されます。この場合では、その画像を メモリに保管するのは、おそらく100個の楕円形を持つよりはるかに大きくなるかもしれません。 しかし、何千もの形状を扱う場合には、イメージブロックはより安っぽくなる可能性があります。</p><p>ポイントは以下の通りです：画像やブロックへ形状をグループ化することは簡単ですので、もし速度を 得ようとするのなら、それを試してください。形状ブロックは特にメモリと速度を節約させるでしょう。</p><p><em>注意:</em> 今のところGreen Shoesではこのマジック(複数の形状をグループにして一つの画像や形状にする) はサポートしていません。</p><h4>どこでもUTF-8</h4><p>Ruby自体はUnicodeを意識しません。そして、UTF-8は一種のUnicodeです。 (UTF-8の完全な説明は<a href="http://en.wikipedia.org/wiki/UTF-8" target="_new">Wikipedia</a>を見てください。)</p><p>しかしながら、UTF-8はWEBで一般的です。そして、多くの異なったプラットホームがそれをサポートします。 そこで、Green Shoesがしなくてはならない変換の量を減らすために、Green Shoesはすべての文字列が UTF-8フォーマットであることを期待します。</p><p>すばらしいことに、Green ShoesでUTF-8を使えば無数の言語（ロシア語、日本語、スペイン語、英語）を 表示ことができます。テキストエディタでUTF-8を使用することだけを確認してください!</p><p>実例を示します：</p><pre><code class="rb"> Shoes.app do
+   stack :margin => 10 do
+     @edit = edit_box do
+       @para.text = @edit.text
+     end
+     @para = para ""
+   end
+ end
+</code></pre><p>このアプリケーションは何でもコピーして編集ボックスに貼り付けて、Green Shoesパラグラフで表示することが できます。外国語（ギリシャ語か日本語のような）のテキストをこのボックスにコピーして、どのように表示されるかを 見ることができます。</p><p>これは、その編集ボックスがUTF-8の文字を返すことを確かめるのにいいテストです。 そして、そのパラグラフはどんなUTF-8の文字でも設定することができます。</p><p><strong>重要事項：</strong>もしいくつかのUTF-8の文字が表示されないなら、パラグラフのフォントを変更する必要があります。 これは特にOS Xで一般的です。</p><p>そして、OS Xでのおすすめの日本語フォントは<strong>AppleGothic</strong>です。Windowsでは<strong>MS UI Gothic</strong>です。</p><pre><code class="rb"> Shoes.app do
+   para "てすと (te-su-to)",
+    font: case RUBY_PLATFORM
+    when /mingw/; "MS UI Gothic"
+    when /darwin/; "AppleGothic, Arial"
+    else "Arial"
+    end
+ end
+</code></pre><p>さらに、Green Shoesで文字列を扱う場合もUTF-8の文字列を必要とします。 編集ボックス、編集ライン、リストボックス、ウィンドウタイトルやテキストブロックはすべてUTF-8をとります。 間違った文字の入った文字列をあたえた場合は、コンソールにエラーが表示されます。</p><h4>メインアプリケーションとRequire</h4><p><strong>注意:</strong> このルールはRaisinsのためのものです。PolicemanとGreen ShoesではTOPLEVEL_BINDINGを 使っているので、最初の例では <code>main</code> (Rubyトップレベルオブジェクト)が表示されます。 <code>Shoes.app</code>ブロックの外側では、<code>Para</code>ではなく<code>Shoes::Para</code>と記述する必要がありますが。</p><p>それぞれのShoesアプリケーションは、それ自体を作ることができる小さな部屋を与えられます。 クラスを作成したり変数を設定できますが、それらは他のShoesプログラムから見ることはできません。 それぞれのプログラムはそれ自身の匿名クラス内で実行されます。</p><pre><code class="rb"> main = self
+ Shoes.app do
+   para main.to_s
+ end
+</code></pre><p>この匿名クラスは<code>(shoes)</code>と呼ばれ、それは空の無名クラスです。<code>Shoes</code>モジュールは （<code>include Shoes</code>を利用して）このクラスにミックスインされているため、パラグラフクラスを参照しているときに <code>Para</code>や<code>Shoes::Para</code>を利用することができます。</p><p>このアプローチの長所は：</p><ul><li>Shoesアプリケーションはローカル変数を共有できません。 </li><li>メインアプリケーションコードに作成されるクラスは一時的です。 </li><li>Shoesモジュールは、Ruby自身のトップレベル環境ではなく、匿名クラスにミックスインされることができます、 </li><li>ガベージコレクションが一度完了すれば、アプリケーションを完全にきれいにできます。</li></ul><p>二つ目の部分は特に重要なので忘れないこと。</p><pre><code class="rb"> class Storage; end
+ Shoes.app do
+   para Storage.new
+ end
+</code></pre><p>アプリケーションが完了すれば<code>Storage</code>クラスは消えます。ほかのアプリケーションはStorageクラスを 利用できません。そして、それは<code>require</code>を利用してロードされるファイルから手に入れることはできません。</p><p>もっとも、<code>require</code>するときそのコードは近くにいます。それはRubyのトップレベル環境に保持されます。</p><p>そして、この規則は：<strong>アプリケーションのコードに一時的なクラスを保持し、requireに永続的なクラスを 保持しなさい</strong>です。</p><p class="next">Next: <a href="Shoes.html">Shoes</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><ul class="sub"><li><a href="Introducing.html">Introducing</a></li><li><a href="Installing.html">Installing</a></li><li><a href="Rules.html">Rules</a></li></ul></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // The App Object</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>The App Object</h1><div class="intro"><p>アプリケーションはURLでコードを実行する一つのウィンドウです。URLを切り替えるとき、新しい アプリケーションオブジェクトが作成され、スタック、フローや他の要素で満たされます。</p></div><p>アプリケーションはウィンドウ自体です。それは閉じられるか、クリアされるか、新しい要素で満たされる かもしれません。<img src="static/../snapshots/sample46.png" /></p><p>スロット／ボックスの用語では、アプリケーション自体がフローです。詳しくは<em>Slots</em>セクションを 見てください、しかし、これはどんな要素も直接フローのトップレベルに置かれることを単に意味します。</p><a name="shoes.app"></a><div class="method"><a href="#shoes.app">Shoes.app(styles) { ... }</a> » Shoes::App</div><p>Green Shoesのアプリケーションウィンドウを開始します。これはGreen Shoesプログラムを作るための 出発地点です。ブロックの内部では、ウィンドウを様々なGreen Shoesの要素（ボタン、アートワーク、 その他）で満たし、そしてブロックの外では、ウィンドウがどれぐらい大きいのかを説明するために <code>styles</code>を利用します。おそらくアプリケーションの名前についてもです。</p><pre><code class="rb"> Shoes.app title: "White Circle",
+   width: 200, height: 200 do
+   background black
+   fill white
+   oval top: 20, left: 20, radius: 160
+ end
+</code></pre><p>上記のケースでは、小さなウィンドウを作成します。200×200ピクセルです。 そして、そのウィンドウには黒い背景と白い輪の2つの要素があります。</p><p>いったんアプリケーションが作成されれば、それは<a href="App.html#Shoes.APPS">Shoes.APPS</a>の一覧に追加されます。 もしあなたがより多くのウィンドウを生成したいなら、<a href="Element.html#window">window</a>メソッドや <a href="Element.html#dialog">dialog</a>メソッドを見てください。</p><div class="desc"></div><a name="shoes.apps"></a><div class="method"><a href="#shoes.apps">Shoes.APPS()</a> » An array of Shoes::App objects</div><p>現在開いているすべてのGreen Shoesアプリケーションの完全な一覧を作成します。 いったんアプリケーションが閉じられると、その一覧から取り除かれます。 そう、Green Shoesでは一度に多くの実行できます。それはとても元気付けられます。</p><div class="desc"></div><a name="clipboard"></a><div class="method"><a href="#clipboard">clipboard()</a> » a string</div><p>システムのクリップボードのすべてのテキストを含む文字列を返します。 これはコンピュータ上のどのプログラムからでもカットアンドペーストできるグローバルクリップボードです。</p><div class="desc"></div><a name="clipboard="></a><div class="method"><a href="#clipboard=">clipboard = a string</a></div><p>システムクリップボードに<code>a string</code>のテキストを保存します。</p><div class="desc"></div><a name="close"></a><div class="method"><a href="#close">close()</a></div><p>アプリケーションのウィンドウを閉じます。 複数のウィンドウを開いていて、すべてのアプリケーションを閉じたいなら、ビルトインメソッドの <code>exit</code>を利用してください。</p><pre><code class="rb"> Shoes.app do
+  para 'hello'
+  button 'spawn' do
+   Shoes.app do
+    para 'hello'
+    button('close: close this window only'){close}
+    button('exit: quit Green Shoes'){exit}
+   end
+  end
+  button('close: close this window only'){close}
+  button('exit: quit Green Shoes'){exit}
+ end
+</code></pre><div class="desc"></div><a name="download"></a><div class="method"><a href="#download">download(url: a string, styles)</a></div><p>ダウンロードのスレッド（あなたがJavaScriptに詳しいのなら、およそXMLHttpRequestのようなものです） を開始します。このメソッドは、すぐに戻り値を返してバックグラウンドでダウンロードを開始します。 また、それぞれのダウンロードスレッドが<code>start</code>、<code>progress</code>や<code>finish</code>イベントを開始します。 downloadにファイルを送ることや、（<code>finish</code>イベントの中で）文字列を取り戻すことができます。</p><p>downloadにブロックを付けると、それは<code>finish</code>イベントとして呼ばれます。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     title "Searching Google", size: 16
+     @status = para "One moment..."
+     download "http://is.gd/bXTVY7" do |goog|
+       @status.text = "Headers: #{goog.meta}"
+     end
+   end
+ end
+</code></pre><p>この例は本当に<code>download</code>の最も簡単な形です：いくつかのウェブデータをメモリにダウンロードして、 ダウンロードが完了するとそのデータを操作しています。</p><p><code>download</code>のもう一つのサンプルはいくつかのウェブデータを、<code>:save</code>スタイルを利用してファイルに 保存します。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     title "Downloading Google image", size: 16
+     @status = para "One moment..."
+     download "http://is.gd/GVAGF7",
+       :save => "nasa50th.gif" do
+      @status.text = "Okay, is downloaded."
+      image "nasa50th.gif", top: 100
+     end
+   end
+ end
+</code></pre><p>もしも特定のヘッダかアクションをウェブサーバへ送る必要があるのならば、HTTPリクエストを カスタマイズするために<code>:method</code>、<code>:headers</code>や<code>:body</code>スタイルを利用することができます。 （そして、それら以上のスタイルが必要なら、いつでもRubyのOpenURIクラスを準備することができます。）</p><pre><code class="rb"> # Not yet available
+ Shoes.app do
+   stack do
+     title "GET Google", size: 16
+     @status = para "One moment..."
+     download "http://is.gd/bXTVY7", 
+         :method => "GET" do |dump|
+       @status.text = dump.response.body
+     end
+   end
+ end
+</code></pre><p>上記の例から、Shoesは、Googleのサーチエンジンへ質問するために&quot;GET&quot;メソッドを 利用することが分かります。</p><p><strong>注意:</strong> Green Shoesは、<code>:method</code>, <code>:headers</code>, <code>:body</code>スタイルをサポートしていません。</p><pre><code class="rb"> include Hpricot
+ Shoes.app do
+   status = para "One moment..."
+   download 'http://is.gd/BatiRt' do |dl|
+     samples = []
+     Hpricot(dl).inner_text.each_line do |line|
+       samples.push($1) if line =~ /(sample.*\.rb)/
+     end
+     status.text = samples.join(', ')
+     flush
+   end
+ end
+</code></pre><p>上記の例から、Green ShoesはHTML解析のためにHpricotライブラリを組み込んでいることが わかります。</p><p><strong>注意:</strong> 今のところWindowsプラットフォームのみです。</p><div class="desc"></div><a name="location"></a><div class="method"><a href="#location">location()</a> » a string</div><p>現在のアプリケーションのURLを含む文字列を取得します。</p><div class="desc"></div><a name="mouse"></a><div class="method"><a href="#mouse">mouse()</a> » an array of numbers: button, left, top</div><p>どちらのボタンが押されたのかと共に、マウスカーソルの位置を特定します。</p><pre><code class="rb"> Shoes.app do
+   @p = para
+   animate do
+     button, left, top = self.mouse
+     @p.replace "mouse: #{button}, #{left}, #{top}"
+   end
+ end
+</code></pre><div class="desc"></div><a name="owner"></a><div class="method"><a href="#owner">owner()</a> » Shoes::App</div><p>このアプリケーションを開始したアプリケーションを取得します。多くの場合、これは<code>nil</code>でしょう。 しかし<a href="Element.html#window">window</a>メソッドを利用してアプリケーションが開始されたなら、 その所有者は<code>window</code>と呼ばれるアプリケーションでしょう。</p><div class="desc"></div><a name="started?"></a><div class="method"><a href="#started?">started?()</a> » true or false</div><p>ウィンドウはすべて構築され、表示されましたか？これは完全に構築される前に、 ウィンドウを利用しようとするスレッド化されたコードのために役に立ちます。 （また、ウィンドウが開くときに実行される<code>start</code>イベントも見てください。）</p><p><em>注意:</em>' 今のところGreen Shoesではstarted?メソッドをサポートしていません。</p><div class="desc"></div><a name="visit"></a><div class="method"><a href="#visit">visit(url: a string)</a></div><p>異なるShoesのURLを見るために、ロケーションを変更します。</p><p>（http://google.comのような）絶対パスのURLは悪くないですが、Green ShoesはGreen Shoes アプリケーションがそのアドレスに存在することを期待するでしょう。 （そのため、google.comはHTMLアプリケーションとしては動作しません。）</p><div class="desc"></div><p class="next">Next: <a href="Styles.html">The Styles Master List</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><ul class="sub"><li><a href="Built-in.html">Built-in</a></li><li><a href="App.html">App</a></li><li><a href="Styles.html">Styles</a></li><li><a href="Classes.html">Classes</a></li><li><a href="Colors.html">Colors</a></li></ul></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Green Shoes Manual // Check</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Green Shoes Manual 1.0.318</h2><h1>Check</h1><div class="intro"><p>チェックボックスはチェックされた状態またはチェックされていない状態になるクリック可能な 四角い箱です。１つのチェックボックスでは通常は&quot;はい（yes）&quot;または&quot;いいえ（no）&quot;の 質問をたずねます。複数のチェックボックスのセットではto-doリストでも見られます。 <img src="static/man-ele-check.png" /></p></div><p>ここにチェックリストのサンプルがあります。</p><pre><code class="rb"> Shoes.app do
+   stack do
+     flow do
+       check; para "Frances Johnson", width: 200
+     end
+     flow do
+       check; para "Ignatius J. Reilly", width: 200
+     end
+     flow do
+       check
+       para "Winston Niles Rumfoord", width: 200
+     end
+   end
+ end
+</code></pre><p>基本的にはチェック（check）を利用するための２つの方法があります。 チェックにチェックがクリックされたときに呼ばれるブロックを取り付けます。 そして／または、ボックスがチェックされているかどうか確認する<code>checked?</code>メソッドを 利用できます。</p><p>では、上記の例に追加しましょう。</p><pre><code class="rb"> Shoes.app do
+   @list = ['Frances Johnson', 'Ignatius J. Reilly',
+     'Winston Niles Rumfoord']
+   stack do
+     @list.map! do |name|
+       flow { @c = check; para name, width: 200 }
+       [@c, name]
+     end
+     button "What's been checked?" do
+       selected = 
+         @list.map{|c, n| n if c.checked?}.compact
+       alert("You selected: " + selected.join(', '))
+     end
+   end
+ end
+</code></pre><p>そして、ボタンが押されたときに、<code>checked?</code>メソッドを利用して、それぞれのチェックは その状態を尋ねます。</p><p>下のボタンメソッドの一覧だけでなく、すべての要素が応答できる、<a href="Common.html">Common</a>メソッドの 一覧も見てください。</p><a name="checked?"></a><div class="method"><a href="#checked?">checked?()</a> » true or false</div><p>その箱がチェックされているかどうかを返します。 そして、<code>true</code>の意味は&quot;はい、この箱はチェックされています！&quot;です。</p><div class="desc"></div><a name="checked="></a><div class="method"><a href="#checked=">checked = true or false</a></div><p>チェックボックスをマークしたりマークを外したりします。 例えば、<code>checked = false</code>を利用して、箱のチェックを外します。</p><div class="desc"></div><a name="click"></a><div class="method"><a href="#click">click() { |self| ... }</a> » self</div><p>チェックボックスがクリックされたときに、その<code>click</code>ブロックが呼ばれます。 このブロックは、クリックされたチェックボックスオブジェクトの<code>self</code>を渡します。</p><p>箱がチェックされるときとチェックを外すときのどちらもクリックが渡されます。</p><div class="desc"></div><a name="focus"></a><div class="method"><a href="#focus">focus()</a> » self</div><p>チェックボックスにフォーカスを移動します。そのチェックボックスはハイライトされ、 ユーザがエンターキーを打てば、そのチェックボックスはチェックされた状態とチェックされていない 状態の間をトグルします。</p><div class="desc"></div><p class="next">Next: <a href="EditBox.html">EditBox</a></p></div><div class="sidebar"><img src="static/gshoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><ul class="sub"><li><a href="Common.html">Common</a></li><li><a href="Background.html">Background</a></li><li><a href="Border.html">Border</a></li><li><a href="Button.html">Button</a></li><li><a href="Check.html">Check</a></li><li><a href="EditBox.html">EditBox</a></li><li><a href="EditLine.html">EditLine</a></li><li><a href="Image.html">Image</a></li><li><a href="ListBox.html">ListBox</a></li><li><a href="Progress.html">Progress</a></li><li><a href="Radio.html">Radio</a></li><li><a href="Shape.html">Shape</a></li><li><a href="TextBlock.html">TextBlock</a></li><li><a href="Timers.html">Timers</a></li><li><a href="Video.html">Video</a></li></ul></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>
