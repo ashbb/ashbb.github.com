@@ -52,7 +52,7 @@ Green Shoes is just a gem written in pure Ruby. Red Shoes is written in C and Ru
  Shoes.app{para 'hi'}
 </code></pre>
 
-<p>Red Shoes opens two Shoes.app windows at a time. But Green Shoes opens them in order one by one. If you want to open two windows at a time with Green Shoes, try out the following.</p>
+<p>Red Shoes opens two Shoes.app windows at a time. But Green Shoes opens the first window only. If you want to open two windows at a time with Green Shoes, try out the following.</p>
 
 <pre><code class="rb">
  Shoes.app do 
@@ -78,29 +78,6 @@ Green Shoes is just a gem written in pure Ruby. Red Shoes is written in C and Ru
    stack do
      button 'hello', width: 0.5
      list_box width: 0.5
-   end
- end
-</code></pre>
-
-<h4>Close window</h4>
-<p>Pay attention to the close sequence. For Red Shoes:</p>
-
-<pre><code class="rb">
- Shoes.app title: 'first window' do
-   button 'spawn a new window' do
-     Shoes.app(title: 'new window'){}
-     close
-   end
- end
-</code></pre>
-
-<p>For Green Shoes:</p>
-
-<pre><code class="rb">
- Shoes.app title: 'first window' do
-   button 'spawn a new window' do
-     close
-     Shoes.app(title: 'new window'){}
    end
  end
 </code></pre>
