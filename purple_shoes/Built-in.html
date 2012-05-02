@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Purple Shoes Manual // Built-in Methods</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Purple Shoes Manual 0.6.153</h2><h1>Built-in Methods</h1><div class="intro">These methods can be used anywhere throughout Purple Shoes programs.</div><p>All of these commands are unusual because you don't attach them with a dot. <strong>Every other method in this manual must be attached to an object with a dot.</strong> But these are built-in methods (also called: Kernel methods.) Which means no dot!</p><p>A common one is <code>alert</code>:</p><pre><code class="rb">  alert &quot;No dots in sight&quot;
+</code></pre><p>Compare that to the method <code>reverse</code>, which isn't a Kernel method and is only available for Arrays and Strings:</p><pre><code class="rb"> Shoes.app do
+   para &quot;Plaster of Paris&quot;.reverse
+   #=&gt; &quot;siraP fo retsalP&quot;
+   para [:dogs, :cows, :snakes].reverse
+   #=&gt; [:snakes, :cows, :dogs]
+ end
+</code></pre><p>Most Purple Shoes methods for drawing and making buttons and so on are attached to slots.  See the section on <a href="Slots.html">Slots</a> for more.</p><h4>Built-in Constants</h4><p>Purple Shoes also has a handful of built-in constants which may prove useful if you are trying to sniff out what release of Purple Shoes is running.</p><p><strong>DIR</strong> is a full path of <code>purple_shoes/lib</code>. </p><p><strong>COLORS</strong> is a complete list of colors available to the app. </p><p><strong>FONTS</strong> is a complete list of fonts available to the app. </p><p><strong>SHOES_VERSION</strong> is a Purple Shoes version. </p><pre><code class="rb"> Shoes.app do
+   para SHOES_VERSION
+   para fg(DIR, red)
+   image File.join(DIR, 
+     '../static/purple_shoes-icon.png')
+   para fg(FONTS.join(', '), green)
+   para COLORS.map{|k, v| [k, v]}
+ end
+</code></pre><a name="alert"></a><div class="divmethod"><a href="#alert">alert(message: a string)</a> » nil</div><p>Pops up a window containing a short message.</p><pre><code class="rb"> alert &quot;I'm afraid I must interject!&quot;
+</code></pre><p>Please use alerts sparingly, as they are incredibly annoying!  If you are using alerts to show messages to help you debug your program, try checking out the standard Ruby method <code>puts</code> or <code>p</code> methods.</p><div class="desc"></div><a name="ask"></a><div class="divmethod"><a href="#ask">ask(message: a string)</a> » a string</div><p>Pops up a window and asks a question. For example, you may want to ask someone their name.</p><pre><code class="rb"> if name = ask(&quot;Please, enter your name:&quot;)
+   Shoes.app{para &quot;Welcome, #{name}!&quot;}
+ end
+</code></pre><p>When the above script is run, the person at the computer will see a window with a blank box for entering their name. The name will then be saved in the <code>name</code> variable.</p><div class="desc"></div><a name="ask_color"></a><div class="divmethod"><a href="#ask_color">ask_color(title: a string)</a> » a RGB array</div><p>Pops up a color picker window. The program will wait for a color to be picked, then gives you back a Color object. See the <code>Color</code> help for some ways you can use this color.</p><pre><code class="rb"> backcolor = ask_color &quot;Pick a background&quot;
+ Shoes.app do
+   background backcolor
+ end
+</code></pre><div class="desc"></div><a name="ask_open_file"></a><div class="divmethod"><a href="#ask_open_file">ask_open_file()</a> » a string</div><p>Pops up an &quot;Open file...&quot; window. It's the standard window which shows all of your folders and lets you select a file to open. Hands you back the name of the file.</p><pre><code class="rb"> filename = ask_open_file
+ Shoes.app do
+   para File.read(filename)
+ end
+</code></pre><div class="desc"></div><a name="ask_save_file"></a><div class="divmethod"><a href="#ask_save_file">ask_save_file()</a> » a string</div><p>Pops up a &quot;Save file...&quot; window, similiar to <code>ask_open_file</code>, described previously.</p><pre><code class="rb"> save_as = ask_save_file
+ Shoes.app do
+   para save_as
+ end
+</code></pre><div class="desc"></div><a name="ask_open_folder"></a><div class="divmethod"><a href="#ask_open_folder">ask_open_folder()</a> » a string</div><p>Pops up an &quot;Open folder...&quot; window. It's the standard window which shows all of your folders and lets you select a folder to open. Hands you back the name of the folder.</p><pre><code class="rb"> folder = ask_open_folder
+ Shoes.app do
+   para Dir.entries(folder)
+ end
+</code></pre><div class="desc"></div><a name="ask_save_folder"></a><div class="divmethod"><a href="#ask_save_folder">ask_save_folder()</a> » a string</div><p>Pops up a &quot;Save folder...&quot; window, similiar to <code>ask_open_folder</code>, described previously. </p><pre><code class="rb"> save_to = ask_save_folder
+ Shoes.app do
+   para save_to
+ end
+</code></pre><p> </p><div class="desc"></div><a name="confirm"></a><div class="divmethod"><a href="#confirm">confirm(question: a string)</a> » true or false</div><p>Pops up a yes-or-no question. If the person at the computer, clicks <strong>yes</strong>, you'll get back a <code>true</code>. If not, you'll get back <code>false</code>.</p><pre><code class="rb"> if confirm(&quot;Draw a circle?&quot;)
+  Shoes.app{ oval top: 0, left: 0, radius: 50 }
+ end
+</code></pre><div class="desc"></div><a name="exit"></a><div class="divmethod"><a href="#exit">exit()</a></div><p>Stops your program. Call this anytime you want to suddenly call it quits.</p><div class="desc"></div><a name="font"></a><div class="divmethod"><a href="#font">font(message: a string)</a> » an array of font family names</div><p>Loads a TrueType (or other type of font) from a file.  While TrueType is supported by all platforms, your platform may support other types of fonts. Shoes uses each operating system's built-in font system to make this work.</p><p><strong>Note:</strong> Purple Shoes doesn't support font method so far.</p><p>Here's a rough idea of what fonts work on which platforms:</p><ul><li>Bitmap fonts (.bdf, .pcf, .snf) - Linux </li><li>Font resource (.fon) - Windows </li><li>Windows bitmap font file (.fnt) - Linux, Windows </li><li>PostScript OpenType font (.otf) - Mac OS X, Linux, Windows </li><li>Type1 multiple master (.mmm) - Windows </li><li>Type1 font bits (.pfb) - Linux, Windows </li><li>Type1 font metrics (.pfm) - Linux, Windows </li><li>TrueType font (.ttf) - Mac OS X, Linux, Windows </li><li>TrueType collection (.ttc) - Mac OS X, Linux, Windows</li></ul><p>If the font is properly loaded, you'll get back an array of font names found in the file.  Otherwise, <code>nil</code> is returned if no fonts were found in the file.</p><p>Also of interest: the <code>Shoes::FONTS</code> constant is a complete list of fonts available to you on this platform.  You can check for a certain font by using <code>include?</code>.</p><pre><code class="rb">  if Shoes::FONTS.include? &quot;Coolvetica&quot;
+    alert &quot;Coolvetica is available on this system.&quot;
+  else
+    alert &quot;You do not have the Coolvetica font.&quot;
+  end
+</code></pre><p>If you have trouble with fonts showing up, make sure your app loads the font before it is used.  Especially on OS X, if fonts are used before they are loaded, the font cache will tend to ignore loaded fonts.</p><div class="desc"></div><a name="gradient"></a><div class="divmethod"><a href="#gradient">gradient(color1, color2)</a> » a range of RGB array</div><p>Builds a linear gradient from two colors. For each color, you may pass in  a color/rgb method or a string describing the color. The <code>gradient(green, red)</code> is  the same as <code>green..red</code> for example. Also possible to use different kind of args  like this: <code>gradient(green, '#FA3')</code></p><pre><code class="rb"> Shoes.app do
+   oval 100, 100, 100,
+     fill: gradient(green, '#FA3'), angle: 45
+ end
+</code></pre><div class="desc"></div><a name="gray"></a><div class="divmethod"><a href="#gray">gray(the numbers: darkness, alpha)</a> » a RGB array</div><p>Create a grayscale color from a level of darkness and, optionally, an alpha level.</p><pre><code class="rb"> Shoes.app do
+  nostroke
+  11.times do |i|
+    y = x = 50 + 10 * i
+    r = 200 - 10 * i
+    oval x, y, r, fill: gray(1-i*0.1)
+  end
+ end
+</code></pre><div class="desc"></div><a name="rgb"></a><div class="divmethod"><a href="#rgb">rgb(red, green, blue, alpha)</a> » an array of decimal numbers</div><p>Create a color from red, green and blue components.  An alpha level (indicating transparency) can also be added, optionally.</p><p>When passing in a whole number, use values from 0 to 255.</p><pre><code class="rb"> Shoes.app do
+   blueviolet = rgb(138, 43, 226, 0.5)
+   darkgreen = rgb(0, 100, 0, 0.5)
+   oval 100, 100, 100,
+     fill: [blueviolet, darkgreen].sample
+ end
+</code></pre><p>Or, use a decimal number from 0.0 to 1.0.</p><pre><code class="rb"> Shoes.app do
+   blueviolet = rgb(0.54, 0.17, 0.89)
+   darkgreen = rgb(0, 0.4, 0)
+   oval 100, 100, 100,
+     fill: [blueviolet, darkgreen].sample
+ end
+</code></pre><div class="desc"></div><p class="next">Next: <a href="App.html">The App Object</a></p></div><div class="sidebar"><img src="static/purple_shoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><ul class="sub"><li><a href="Built-in.html">Built-in</a></li><li><a href="App.html">App</a></li><li><a href="Styles.html">Styles</a></li><li><a href="Classes.html">Classes</a></li><li><a href="Colors.html">Colors</a></li></ul></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>

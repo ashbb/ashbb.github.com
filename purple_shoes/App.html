@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><title>The Purple Shoes Manual // The App Object</title><script type="text/javascript" src="static/code_highlighter.js"></script><script type="text/javascript" src="static/code_highlighter_ruby.js"></script><style type="text/css">@import 'static/manual.css';</style></head><body><div id="main"><div id="manual"><h2>The Purple Shoes Manual 0.6.153</h2><h1>The App Object</h1><div class="intro">An App is a single window running code at a URL. When you switch URLs, a new App object is created and filled up with stacks, flows and other Purple Shoes elements.</div><p>The App is the window itself. Which may be closed or cleared and filled with new elements. <img src="static/../snapshots/sample46.png" /></p><p>The App itself, in slot/box terminology, is a flow.  See the <em>Slots</em> section for more, but this just means that any elements placed directly at the top-level will flow.</p><a name="shoes.app"></a><div class="divmethod"><a href="#shoes.app">Shoes.app(styles) { ... }</a> » Shoes::App</div><p>Starts up a Purple Shoes app window.  This is the starting place for making a Purple  Shoes program.  Inside the block, you fill the window with various Purple Shoes  elements (buttons, artwork, etc.) and, outside the block, you use the <code>styles</code> to describe how big the window is.  Perhaps also the name of the app.</p><pre><code class="rb"> Shoes.app title: &quot;White Circle&quot;,
+   width: 200, height: 200 do
+   background black
+   fill white
+   oval top: 20, left: 20, radius: 160
+ end
+</code></pre><p>In the case above, a small window is built.  200 pixels by 200 pixels. And, inside the window, two elements: a black background and a white circle.</p><p>Once an app is created, it is added to the <a href="App.html#Shoes.APPS">Shoes.APPS</a> list.  If you want an app to spawn more windows, see the <a href="Element.html#window">window</a> method and the <a href="Element.html#dialog">dialog</a> method.</p><div class="desc"></div><a name="shoes.apps"></a><div class="divmethod"><a href="#shoes.apps">Shoes.APPS()</a> » An array of Shoes::App objects</div><p>Builds a complete list of all the Purple Shoes apps that are open right now.  Once an app is closed, it is removed from the list.  Yes, you can run many apps at once in Purple Shoes.  It's completely encouraged.</p><pre><code class="rb"> Shoes.app do
+   button('Open a new app'){Shoes.app{}}
+   button('Print Shoes.APPS'){p Shoes.APPS}
+ end
+</code></pre><div class="desc"></div><a name="clipboard"></a><div class="divmethod"><a href="#clipboard">clipboard()</a> » a string</div><p>Returns a string containing all of the text that's on the system clipboard. This is the global clipboard that every program on the computer cuts and pastes into.</p><div class="desc"></div><a name="clipboard="></a><div class="divmethod"><a href="#clipboard=">clipboard = a string</a></div><p>Stores <code>a string</code> of text in the system clipboard.</p><div class="desc"></div><a name="close"></a><div class="divmethod"><a href="#close">close()</a></div><p>Closes the app window.  If multiple windows are open and you want to close the entire application, use the built-in method <code>exit</code>.</p><pre><code class="rb"> Shoes.app do
+  para 'hello'
+  button 'spawn' do
+   Shoes.app do
+    para 'hello'
+    button('close: close this window only'){close}
+    button('exit: quit Purple Shoes'){exit}
+   end
+  end
+  button('close: close this window only'){close}
+  button('exit: quit Purple Shoes'){exit}
+ end
+</code></pre><div class="desc"></div><a name="download"></a><div class="divmethod"><a href="#download">download(url: a string, styles)</a></div><p>Starts a download thread (much like XMLHttpRequest, if you're familiar with JavaScript.)  This method returns immediately and runs the download in the background.  Each download thread also fires <code>start</code>, <code>progress</code> and <code>finish</code> events.  You can send the download to a file or just get back a string (in the <code>finish</code> event.)</p><p>If you attach a block to a download, it'll get called as the <code>finish</code> event.</p><pre><code class="rb"> Shoes.app do
+   stack do
+     title &quot;Searching Google&quot;, size: 16
+     @status = para &quot;One moment...&quot;
+     download &quot;http://is.gd/bXTVY7&quot; do |goog|
+       @status.text = &quot;Headers: #{goog.meta}&quot;
+     end
+   end
+ end
+</code></pre><p>This example is truly the simplest form of <code>download</code>: pulling some web data down into memory and handling it once it's done.</p><p>Another simple use of <code>download</code> is to save some web data to a file, using the <code>:save</code> style.</p><pre><code class="rb"> Shoes.app do
+   stack do
+     title &quot;Downloading Google image&quot;, size: 16
+     @status = para &quot;One moment...&quot;
+     download &quot;http://is.gd/GVAGF7&quot;,
+       :save =&gt; &quot;nasa50th.gif&quot; do
+        @status.text = &quot;Okay, is downloaded.&quot;
+        image &quot;nasa50th.gif&quot;, top: 100
+     end
+   end
+ end
+</code></pre><p>If you need to send certain headers or actions to the web server, you can use the <code>:method</code>, <code>:headers</code> and <code>:body</code> styles to customize the HTTP request. (And, if you need to go beyond these, you can always break out Ruby's OpenURI class.)</p><pre><code class="rb"> # Not yet available
+ Shoes.app do
+   stack do
+     title &quot;GET Google&quot;, size: 16
+     @status = para &quot;One moment...&quot;
+     download &quot;http://is.gd/bXTVY7&quot;, 
+         :method =&gt; &quot;GET&quot; do |dump|
+       @status.text = dump.response.body
+     end
+   end
+ end
+</code></pre><p>As you can see from the above example, Shoes makes use of the &quot;GET&quot; method to query google's search engine.</p><p><strong>Note:</strong> Purple Shoes doesn't support the <code>:method</code>, <code>:headers</code> and <code>:body</code> styles.</p><pre><code class="rb"> # Not yet available
+ include Hpricot
+ Shoes.app do
+   status = para &quot;One moment...&quot;
+   download 'http://is.gd/BatiRt' do |dl|
+     samples = []
+     Hpricot(dl).inner_text.each_line do |line|
+       samples.push($1) if line =~ /(sample.*\.rb)/
+     end
+     status.text = samples.join(', ')
+     flush
+   end
+ end
+</code></pre><div class="desc"></div><a name="location"></a><div class="divmethod"><a href="#location">location()</a> » a string</div><p>Gets a string containing the URL of the current app.</p><div class="desc"></div><a name="mouse"></a><div class="divmethod"><a href="#mouse">mouse()</a> » an array of numbers: button, left, top</div><p>Identifies the mouse cursor's location, along with which button is being pressed.</p><pre><code class="rb"> Shoes.app do
+   @p = para
+   animate do
+     button, left, top = self.mouse
+     @p.replace &quot;mouse: #{button}, #{left}, #{top}&quot;
+   end
+ end
+</code></pre><div class="desc"></div><a name="owner"></a><div class="divmethod"><a href="#owner">owner()</a> » Shoes::App</div><p>Gets the app which launched this app.  In most cases, this will be <code>nil</code>.  But if this app was launched using the <a href="Element.html#window">window</a> method, the owner will be the app which called <code>window</code>.</p><div class="desc"></div><a name="started?"></a><div class="divmethod"><a href="#started?">started?()</a> » true or false</div><p>Has the window been fully constructed and displayed?  This is useful for threaded code which may try to use the window before it is completely built. (Also see the <code>start</code> event which fires once the window is open.)</p><p><strong>Note:</strong> Purple Shoes doesn't support started? method so far.</p><div class="desc"></div><a name="visit"></a><div class="divmethod"><a href="#visit">visit(url: a string)</a></div><p>Changes the location, in order to view a different Shoes URL.</p><p>Absolute URLs (such as http://google.com) are okay, but Purple Shoes will be expecting a Purple Shoes application to be at that address.  (So, google.com won't work, as it's an HTML app.)</p><div class="desc"></div><p class="next">Next: <a href="Styles.html">The Styles Master List</a></p></div><div class="sidebar"><img src="static/purple_shoes-icon.png"></img><ul><li><a href="./" class="prime">HELP</a></li><li><a href="Hello!.html">Hello!</a></li><li><a href="Shoes.html">Shoes</a></li><li><ul class="sub"><li><a href="Built-in.html">Built-in</a></li><li><a href="App.html">App</a></li><li><a href="Styles.html">Styles</a></li><li><a href="Classes.html">Classes</a></li><li><a href="Colors.html">Colors</a></li></ul></li><li><a href="Slots.html">Slots</a></li><li><a href="Elements.html">Elements</a></li><li><a href="AndSoForth.html">AndSoForth</a></li></ul></div></div></body></html>
